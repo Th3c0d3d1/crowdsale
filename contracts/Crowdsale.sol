@@ -5,12 +5,20 @@ import "./Token.sol";
 
 contract Crowdsale {
     Token public token;
-    // save local token variable from created token contract to state 
-    constructor(Token _token) {
+    // store token price in contract
+    uint256 public price;
+
+    // save local token variables from created token contract to state 
+    constructor(
+        Token _token,
+        uint256 _price
+    ) {
         token = _token;
+        price = _price;
     }
 
-    function buyTokens(uint256 _amount) public {
+    // Payable stores eth in crowdsale contract in exchange for tokens
+    function buyTokens(uint256 _amount) public payable {
         token.transfer(msg.sender, _amount);
     }
 }
