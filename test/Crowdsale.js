@@ -28,10 +28,11 @@ describe('Crowdsale', () => {
         deployer = accounts[0]
         user1 = accounts[1]
 
-        // Deploy the crowdsale
+        // Deploy the ICO contract
         // Declare price of token (ether(1))
-        // 1 eth = 1 NXG 
-        crowdsale = await Crowdsale.deploy(token.address, ether(1))
+        // 1 ETH = 1 NXG 
+        // (token.address, ether(1), '1000000') = constructor variables(token address, price, maxSupply)
+        crowdsale = await Crowdsale.deploy(token.address, ether(1), '1000000')
 
         // Send tokens to crowdsale
         // transaction is when the token deployer transfers token supply to the crowdsale address
@@ -69,8 +70,8 @@ describe('Crowdsale', () => {
         describe('Success', () => {
             beforeEach(async () => {
                 // transaction is when a crowdsale user buys a token amount
-                let transaction = await crowdsale.connect(user1).buyTokens(amount)
-                let result = await transaction.wait()
+                transaction = await crowdsale.connect(user1).buyTokens(amount, {value: ether(10)})
+                result = await transaction.wait()
             })
 
             it('transfers tokens', async () => {
@@ -84,6 +85,23 @@ describe('Crowdsale', () => {
             it('updates contracts ether balance', async () => {
                 // expect the ether balance of the crowdsale contract address to equal the amount transfered
                 expect(await ethers.provider.getBalance(crowdsale.address)).to.eq(amount)
+            })
+
+            it('updates tokensSold', async () => {
+                expect (await crowdsale.tokensSold()).to.eq(amount)
+            })
+
+            it('emits a buy event', async () => {
+                // ref hardhat chai matchers to assert an event emission
+                // expect the transaction to emit a crowdsale buy event with an amount & the crowdsale user address argument
+                await expect(transaction).to.emit(crowdsale, 'Buy').withArgs(amount, user1.address)
+            })
+        })
+
+        describe('Failure', () => {
+            it('rejects isufficient ETH', async () => {
+                // expect the connected crowdsale user purchase of 10 tokens using an ETH value of zero to be reverted
+                await expect(crowdsale.connect(user1).buyTokens(tokens(10), {value: 0})).to.be.reverted
             })
         })
     })
