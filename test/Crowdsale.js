@@ -105,4 +105,28 @@ describe('Crowdsale', () => {
             })
         })
     })
+
+    describe('Sending ETH', () => {
+        let transaction, result
+        let amount = ether(10)
+
+        describe('Success', () => {
+
+            beforeEach(async () => {
+                // transaction is sent directly form user to ICO contract for token purchase
+                // conection of user to ICO address not necessary with sendTransaction
+                transaction = await user1.sendTransaction({ to: crowdsale.address, value: amount })
+                result = await transaction.wait()
+            })
+
+            it('updates contracts ether balance', async () => {
+                // expect the ether balance of the crowdsale contract address to equal the amount transfered
+                expect(await ethers.provider.getBalance(crowdsale.address)).to.eq(amount)
+            })
+
+            it('updates user token balance', async () => {
+                expect(await token.balanceOf(user1.address)).to.eq(amount)
+            })
+        })
+    })
 })

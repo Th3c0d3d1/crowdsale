@@ -23,6 +23,15 @@ contract Crowdsale {
         maxTokens = _maxTokens;
     }
 
+    // function to buy tokens by direct contract interaction
+    // no user/website interaction
+    // required to receive ETH
+    // sets the price required to buy tokens
+    receive() external payable{
+        uint256 amount = msg.value / price;
+        buyTokens(amount * 1e18);
+    }
+
     // Payable stores eth in crowdsale contract in exchange for tokens
     function buyTokens(uint256 _amount) public payable {
         // Verify sufficient crypto to satisfy condition
