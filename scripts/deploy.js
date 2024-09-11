@@ -1,10 +1,10 @@
 const hre = require("hardhat");
 
 async function main() {
-    const NAME = 'Next Gen'
-    const SYMBOL = 'NXG'
-    const MAX_SUPPLY = '1000000'
-    const PRICE = ethers.utils.parseUnits('0.025', 'ether')
+    const NAME = 'Insert Token Name'
+    const SYMBOL = 'Insert Token Symbol'
+    const MAX_SUPPLY = 'Insert Token Supply'
+    const PRICE = ethers.utils.parseUnits('Insert Token price(ETH)', 'ether')
 
     // Deployment token
     const Token = await  hre.ethers.getContractFactory('Token')
