@@ -12,7 +12,7 @@ const Navigation = () => {
                 height="40"
                 className="d-inline-block align-top mx-3"
             />
-            <Navbar.Brand href="#">Next Gen ICO Crowdsale!</Navbar.Brand>
+            <Navbar.Brand href="#">Insert Navbar Website Title</Navbar.Brand>
         </Navbar>
     )
 }
