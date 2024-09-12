@@ -8,6 +8,7 @@ import Info from "./Info.js"
 import config from "../config.json"
 import Loading from "./Loading.js"
 import Progress from "./Progress.js"
+import Buy from "./Buy.js"
 
 // ABIs
 import TOKEN_ABI from "../abis/Token.json"
@@ -41,6 +42,7 @@ function App() {
         // Initiate Contracts
         const token = new ethers.Contract(config[chainId].token.address, TOKEN_ABI, provider)
         console.log(token.address)
+        
         const crowdsale = new ethers.Contract(config[chainId].crowdsale.address, CROWDSALE_ABI, provider)
         setCrowdsale(crowdsale)
         
@@ -86,6 +88,9 @@ function App() {
             ) : (
             <>
                 <p className="text-center"><strong>Current Price:</strong> {price} ETH</p>
+
+                <Buy provider={provider} price={price} crowdsale={crowdsale} setIsLoading={setIsLoading} />
+
                 <Progress maxTokens={maxTokens} tokensSold={tokensSold} />
             </>
             )}
