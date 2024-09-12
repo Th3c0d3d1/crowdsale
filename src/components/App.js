@@ -6,6 +6,8 @@ import { ethers } from "ethers"
 import Navigation from "./Nav.js"
 import Info from "./Info.js"
 import config from "../config.json"
+import Loading from "./Loading.js"
+import Progress from "./Progress.js"
 
 // ABIs
 import TOKEN_ABI from "../abis/Token.json"
@@ -33,10 +35,13 @@ function App() {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         SetProvider(provider)
 
+        // Fetch Chain ID
+        const { chainId } = await provider.getNetwork()
+
         // Initiate Contracts
-        const token = new ethers.Contract(config[31337].token.address, TOKEN_ABI, provider)
+        const token = new ethers.Contract(config[chainId].token.address, TOKEN_ABI, provider)
         console.log(token.address)
-        const crowdsale = new ethers.Contract(config[31337].crowdsale.address, CROWDSALE_ABI, provider)
+        const crowdsale = new ethers.Contract(config[chainId].crowdsale.address, CROWDSALE_ABI, provider)
         setCrowdsale(crowdsale)
         
         // Set the MMK accounts to the accounts variable
@@ -74,10 +79,15 @@ function App() {
         <Container>
             <Navigation />
 
+            <h1 className="text-center">Introducing Next Gen Token!</h1>
+
             {isLoading ? (
-                <p className="text-center">loading...</p>
+                <Loading />
             ) : (
+            <>
                 <p className="text-center"><strong>Current Price:</strong> {price} ETH</p>
+                <Progress maxTokens={maxTokens} tokensSold={tokensSold} />
+            </>
             )}
 
             <hr />
