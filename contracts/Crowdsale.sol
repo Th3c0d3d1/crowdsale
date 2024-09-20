@@ -42,6 +42,11 @@ contract Crowdsale {
         _;
     }
 
+    modifier whitelisted() {
+        require(msg.sender == whitelisted, 'caller must be owner');
+        _;
+    }
+
 
     // function to buy tokens by direct contract interaction
     // no user/website interaction
@@ -68,6 +73,7 @@ contract Crowdsale {
 
         emit Buy(_amount, msg.sender);
     }
+
 
     function setPrice(uint256 _price) public onlyOwner() {
         price = _price;
