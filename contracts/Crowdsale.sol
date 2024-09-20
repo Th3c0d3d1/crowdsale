@@ -43,7 +43,7 @@ contract Crowdsale {
     }
 
     modifier whitelisted() {
-        require(msg.sender == whitelisted, 'caller must be owner');
+        require(msg.sender == whitelisted, 'caller must be whitelisted);
         _;
     }
 
