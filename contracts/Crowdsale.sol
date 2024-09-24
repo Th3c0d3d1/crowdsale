@@ -2,14 +2,15 @@
 pragma solidity ^0.8.0;
 
 import "./Token.sol";
+import "./Whitelist.sol";
 
-contract Crowdsale {
-    address public owner;
+contract Crowdsale is Whitelist {
     Token public token;
     // store token price in contract
     uint256 public price;
     uint256 public maxTokens;
     uint256 public tokensSold;
+    bool public isWhitelisted;
 
     event Buy(uint256 amount, address buyer);
     event Finalize(uint256 tokensSold, uint256 ethRaised);
@@ -19,29 +20,12 @@ contract Crowdsale {
         Token _token,
         uint256 _price,
         uint256 _maxTokens
-    ) {
+    ) Whitelist() {
         owner = msg.sender;
         token = _token;
         price = _price;
         maxTokens = _maxTokens;
     }
-
-    modifier onlyOwner() {
-        // verifies deployer as only authorized finalizer
-        // use reason string to add error messages
-        require(msg.sender == owner, 'caller must be owner');
-        
-        // _; identifies the function body
-        // reads - execute this(require(msg.sender == owner, 'caller must be owner');), before moving onto function body
-            // eg body of Finalize:
-            // require(token.transfer(owner, token.balanceOf(address(this))));
-            // uint256 value = address(this).balance;
-            // (bool sent, ) = owner.call{value: value}("");
-            // require(sent);
-            // emit Finalize(tokensSold, value);
-        _;
-    }
-
 
     // function to buy tokens by direct contract interaction
     // no user/website interaction

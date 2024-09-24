@@ -59,7 +59,8 @@ function App() {
 
         const price = ethers.utils.formatUnits(await crowdsale.price(), 18)
         setPrice(price)
-
+        
+        // formats qty to correct decimals in ui
         const maxTokens = ethers.utils.formatUnits(await crowdsale.maxTokens(), 18)
         setMaxTokens(maxTokens)
 
