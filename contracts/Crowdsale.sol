@@ -10,12 +10,11 @@ contract Crowdsale is Whitelist {
     uint256 public price;
     uint256 public maxTokens;
     uint256 public tokensSold;
-    bool public isWhitelisted;
 
     event Buy(uint256 amount, address buyer);
     event Finalize(uint256 tokensSold, uint256 ethRaised);
 
-    // save local token variables from created token contract to state 
+    // save local token variables from the created Token & Whitelist contracts to Crowdsale state 
     constructor(
         Token _token,
         uint256 _price,
