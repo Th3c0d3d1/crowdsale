@@ -6,6 +6,8 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 
 contract Whitelist {
+    // "public" visibility accesses value from outside the contract
+    // state variables stored on the blockchain
     address public owner;
 
     // mapping the address for boolean
