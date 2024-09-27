@@ -19,6 +19,7 @@ describe('Crowdsale', () => {
         // Load Contracts
         const Crowdsale = await ethers.getContractFactory('Crowdsale')
         const Token = await ethers.getContractFactory('Token')
+        const Whitelist = await ethers.getContractFactory('Whitelist')
 
         // Deploy tokens
         token = await Token.deploy('Next Gen', 'NXG', '1000000')
@@ -27,6 +28,21 @@ describe('Crowdsale', () => {
         accounts = await ethers.getSigners()
         deployer = accounts[0]
         user1 = accounts[1]
+        nonWhitelistedUser = accounts[2]
+
+        // Deploy the whitelist contract
+        whitelist = await Whitelist.deploy()
+        await whitelist.deployed()
+
+        // Add deployer to the whitelist
+        await whitelist.add(deployer.address)
+        // Add user1 to the whitelist
+        await whitelist.add(user1.address)
+
+        // Verify deployer is on the whitelist
+        expect(await whitelist.isWhitelisted(deployer.address)).to.be.true
+        // Verify user1 is on the whitelist
+        expect(await whitelist.isWhitelisted(user1.address)).to.be.true
 
         // Deploy the ICO contract
         // Declare price of token (ether(1))
@@ -69,9 +85,17 @@ describe('Crowdsale', () => {
 
         describe('Success', () => {
             beforeEach(async () => {
+                // Verify user is on the whitelist
+                expect(await whitelist.isWhitelisted(user1.address)).to.be.true
+                
                 // transaction is when a crowdsale user buys a token amount
                 transaction = await crowdsale.connect(user1).buyTokens(amount, {value: ether(10)})
                 result = await transaction.wait()
+            })
+
+            it('allows user to buy tokens if whitelisted', async () => {
+                const balance = await token.balanceOf(user1.address)
+                expect(balance.toString()).to.equal(amount.toString())
             })
 
             it('transfers tokens', async () => {
@@ -99,9 +123,14 @@ describe('Crowdsale', () => {
         })
 
         describe('Failure', () => {
+            it('prevents non-whitelisted users from buying tokens', async () => {
+                await expect(crowdsale.connect(nonWhitelistedUser).buyTokens(tokens('10'), { value: ether(10) }))
+                .to.be.revertedWith('user must be whitelisted')
+            })
+
             it('rejects isufficient ETH', async () => {
                 // expect the connected crowdsale user purchase of 10 tokens using an ETH value of zero to be reverted
-                await expect(crowdsale.connect(user1).buyTokens(tokens(10), {value: 0})).to.be.reverted
+                await expect(crowdsale.connect(user1).buyTokens(tokens(10), {value: 0})).to.be.revertedWith('insufficient ETH')
             })
         })
     })
