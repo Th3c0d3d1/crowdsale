@@ -23,16 +23,14 @@ describe('Crowdsale', () => {
 
         // Deploy tokens
         token = await Token.deploy('Next Gen', 'NXG', '1000000')
+        // Deploy the whitelist contract
+        whitelist = await Whitelist.deploy()
 
         // Configure accounts
         accounts = await ethers.getSigners()
         deployer = accounts[0]
         user1 = accounts[1]
         nonWhitelistedUser = accounts[2]
-
-        // Deploy the whitelist contract
-        whitelist = await Whitelist.deploy()
-        await whitelist.deployed()
 
         // Add deployer to the whitelist
         await whitelist.add(deployer.address)
@@ -87,18 +85,13 @@ describe('Crowdsale', () => {
             beforeEach(async () => {
                 // Verify user is on the whitelist
                 expect(await whitelist.isWhitelisted(user1.address)).to.be.true
-                
+
                 // transaction is when a crowdsale user buys a token amount
                 transaction = await crowdsale.connect(user1).buyTokens(amount, {value: ether(10)})
                 result = await transaction.wait()
             })
 
-            it('allows user to buy tokens if whitelisted', async () => {
-                const balance = await token.balanceOf(user1.address)
-                expect(balance.toString()).to.equal(amount.toString())
-            })
-
-            it('transfers tokens', async () => {
+            it('transfers tokens of whitelised user', async () => {
                 // check for balance change after transfer
                 // expect the token balance of the crowdsale address to equal the token amount after tokens transfer (10 tokens (let amount = tokens(10)) in this test = 999990)
                 expect(await token.balanceOf(crowdsale.address)).to.eq(tokens(999990))
@@ -130,7 +123,7 @@ describe('Crowdsale', () => {
 
             it('rejects isufficient ETH', async () => {
                 // expect the connected crowdsale user purchase of 10 tokens using an ETH value of zero to be reverted
-                await expect(crowdsale.connect(user1).buyTokens(tokens(10), {value: 0})).to.be.revertedWith('insufficient ETH')
+                await expect(crowdsale.connect(user1).buyTokens(tokens('10'), { value: ether(0) })).to.be.revertedWith('insufficient ETH')
             })
         })
     })
