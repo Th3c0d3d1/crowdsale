@@ -45,7 +45,7 @@ contract Crowdsale is Whitelist {
         // Verify sufficient crypto to satisfy condition
         // msg.value checks ETH value sent by payable function by ICO user
         // (_amount / 1e18) * price) converts from wei
-        require(msg.value == (_amount / 1e18) * price);
+        require(msg.value == (_amount / 1e18) * price, 'insufficient ETH');
 
         // Require user balance to be greater than or equal to amount to be spent
         // (this) references the current contract

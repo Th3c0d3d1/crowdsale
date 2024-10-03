@@ -1,11 +1,10 @@
 const { ethers } = require('hardhat')
 const { expect } = require('chai')
 
-// Tokens helper
+// Helper functions
 const tokens = (n) => {
     return ethers.utils.parseUnits(n.toString(), 'ether')
 }
-// Ether helper uses tokens helper
 const ether = tokens
 
 describe('Crowdsale', () => {
@@ -23,9 +22,16 @@ describe('Crowdsale', () => {
 
         // Deploy tokens
         token = await Token.deploy('Next Gen', 'NXG', '1000000')
+
         // Deploy the whitelist contract
         whitelist = await Whitelist.deploy()
-
+        
+        // Deploy the ICO contract
+        // Declare price of token (ether(1))
+        // 1 ETH = 1 NXG 
+        // (token.address, ether(1), '1000000') = constructor variables(token address, price, maxSupply)
+        crowdsale = await Crowdsale.deploy(token.address, ether(1), '1000000')
+        
         // Configure accounts
         accounts = await ethers.getSigners()
         deployer = accounts[0]
@@ -33,20 +39,14 @@ describe('Crowdsale', () => {
         nonWhitelistedUser = accounts[2]
 
         // Add deployer to the whitelist
-        await whitelist.add(deployer.address)
+        await crowdsale.add(deployer.address)
         // Add user1 to the whitelist
-        await whitelist.add(user1.address)
+        await crowdsale.add(user1.address)
 
         // Verify deployer is on the whitelist
-        expect(await whitelist.isWhitelisted(deployer.address)).to.be.true
+        expect(await crowdsale.isWhitelisted(deployer.address)).to.be.true
         // Verify user1 is on the whitelist
-        expect(await whitelist.isWhitelisted(user1.address)).to.be.true
-
-        // Deploy the ICO contract
-        // Declare price of token (ether(1))
-        // 1 ETH = 1 NXG 
-        // (token.address, ether(1), '1000000') = constructor variables(token address, price, maxSupply)
-        crowdsale = await Crowdsale.deploy(token.address, ether(1), '1000000')
+        expect(await crowdsale.isWhitelisted(user1.address)).to.be.true      
 
         // Send tokens to crowdsale
         // transaction is when the token deployer transfers token supply to the crowdsale address
@@ -83,9 +83,6 @@ describe('Crowdsale', () => {
 
         describe('Success', () => {
             beforeEach(async () => {
-                // Verify user is on the whitelist
-                expect(await whitelist.isWhitelisted(user1.address)).to.be.true
-
                 // transaction is when a crowdsale user buys a token amount
                 transaction = await crowdsale.connect(user1).buyTokens(amount, {value: ether(10)})
                 result = await transaction.wait()
@@ -96,7 +93,7 @@ describe('Crowdsale', () => {
                 // expect the token balance of the crowdsale address to equal the token amount after tokens transfer (10 tokens (let amount = tokens(10)) in this test = 999990)
                 expect(await token.balanceOf(crowdsale.address)).to.eq(tokens(999990))
                 // expect the balance of the crowdsale user to equal the amount of tokens transfered after test
-                expect(await token.balanceOf(user1.address)).to.eq(amount)
+                expect(await token.balanceOf(user1.address)).to.eq(amount.toString())
             })
 
             it('updates contracts ether balance', async () => {

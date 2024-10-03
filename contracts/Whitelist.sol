@@ -47,4 +47,23 @@ contract Whitelist {
     function isWhitelisted(address _address) public view returns(bool) {
         return whitelist[_address];
     }
+
+    function getWhitelist() public view returns (address[] memory) {
+        uint256 count = 0;
+        address[] memory tempList = new address[](count);
+        for (uint256 i = 0; i < tempList.length; i++) {
+            if (whitelist[tempList[i]]) {
+                count++;
+            }
+        }
+        address[] memory whitelistedAddresses = new address[](count);
+        uint256 index = 0;
+        for (uint256 i = 0; i < tempList.length; i++) {
+            if (whitelist[tempList[i]]) {
+                whitelistedAddresses[index] = tempList[i];
+                index++;
+            }
+        }
+        return whitelistedAddresses;
+    }
 }
