@@ -18,13 +18,9 @@ describe('Crowdsale', () => {
         // Load Contracts
         const Crowdsale = await ethers.getContractFactory('Crowdsale')
         const Token = await ethers.getContractFactory('Token')
-        const Whitelist = await ethers.getContractFactory('Whitelist')
 
         // Deploy tokens
         token = await Token.deploy('Next Gen', 'NXG', '1000000')
-
-        // Deploy the whitelist contract
-        whitelist = await Whitelist.deploy()
 
         // Deploy the ICO contract
         // Declare price of token (ether(1))
