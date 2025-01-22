@@ -97,7 +97,7 @@ describe('Crowdsale', () => {
         })
     })
 
-    describe('Buying tokens', () => {
+    describe('\nBuying tokens', () => {
         let transaction,
             result
         // buy 10 test tokens
@@ -150,7 +150,7 @@ describe('Crowdsale', () => {
         })
     })
 
-    describe('Sending ETH', () => {
+    describe('\nSending ETH', () => {
         let transaction, result
         let amount = ether(10)
 
@@ -174,7 +174,7 @@ describe('Crowdsale', () => {
         })
     })
 
-    describe('Updating Price', async () => {
+    describe('\nUpdating Price', async () => {
         let transaction, result
         let price = ether(2)
 
@@ -196,7 +196,7 @@ describe('Crowdsale', () => {
         })
     })
 
-    describe('Finalizing Sale', () => {
+    describe('\nFinalizing Sale', () => {
         let transaction, result
         let amount = tokens(10)
         let value = ether(10)
